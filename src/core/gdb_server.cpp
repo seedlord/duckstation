@@ -563,16 +563,15 @@ void GDBServer::ClientSocket::OnSystemPaused()
 
   m_seen_resume = false;
 
-  // Generate a stop reply packet, insert '?' command to generate it.
+  // Generate a stop reply packet.
   SendReplyWithAck("S05");
 }
 
 void GDBServer::ClientSocket::OnSystemResumed()
 {
   m_seen_resume = true;
-
-  // Send ack, in case GDB sent a continue request.
-  SendPacket("+");
+  // Don't send raw ACK here — SendReplyWithAck already prepends it.
+  // Sending an extra "+" corrupts the stream and causes "Invalid hex digit" errors.
 }
 
 void GDBServer::ClientSocket::SendReplyWithAck(std::string_view reply)
