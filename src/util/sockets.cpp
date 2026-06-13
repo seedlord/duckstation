@@ -87,9 +87,10 @@ bool WinsockInitializer::Initialize(Error* error)
     m_init_flag,
     [this](Error* error) {
       WSADATA wsa = {};
-      m_initialized = WSAStartup(MAKEWORD(2, 2), &wsa);
+      const int wsa_result = WSAStartup(MAKEWORD(2, 2), &wsa);
+      m_initialized = (wsa_result == 0);
       if (!m_initialized)
-        Error::SetSocket(error, "WSAStartup() failed: ", WSAGetLastError());
+        Error::SetSocket(error, "WSAStartup() failed: ", wsa_result);
     },
     error);
 
